@@ -11,6 +11,7 @@ class Context extends BaseContext {
     text = this.i18n.t(text)
     return this.reply(text, other, ...rest)
   }
+  menu: any
 }
 
 export default Context

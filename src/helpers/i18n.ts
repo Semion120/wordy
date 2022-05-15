@@ -5,7 +5,7 @@ import { resolve } from 'path'
 const i18n = new I18n({
   defaultLanguageOnMissing: true,
   directory: resolve(cwd(), 'locales'),
-  defaultLanguage: 'en',
+  defaultLanguage: 'ru',
 })
 
 export default i18n
