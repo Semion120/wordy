@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_"},{"v":2,"key":{"englishWord":1},"name":"englishWord_1","background":true,"unique":true},{"v":2,"key":{"transcription":1},"name":"transcription_1","background":true}],"uuid":"1375d947fdf64302a2973fb3deaad05b"}
