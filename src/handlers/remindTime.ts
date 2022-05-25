@@ -14,12 +14,8 @@ export default async function handleRemindTime(ctx: Context) {
   } else {
     return ctx.reply('Неверное время: ' + timeFromMessage, sendOptions(ctx))
   }
-  const goldenDict = await DictModel.findOne({ name: 'Golden Dict' }).catch(
-    (err) => console.log(err)
-  )
   const user = ctx.dbuser
   user.settings = { remindTime: time }
-  user.useDict = goldenDict?._id
   await user.save()
   return ctx.replyWithLocalization('got_time', sendOptions(ctx))
 }

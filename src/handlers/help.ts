@@ -3,7 +3,6 @@ import Context from '@/models/Context'
 import sendOptions from '@/helpers/sendOptions'
 
 export default async function handleHelp(ctx: Context) {
-  await UserModel.deleteMany({})
   if (!ctx.from) {
     throw new Error('No from field found')
   }
