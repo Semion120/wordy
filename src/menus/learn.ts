@@ -38,7 +38,6 @@ export async function nextWord(ctx: Context) {
   const wordsToLearn = ctx.dbuser.needTolearn
   if (wordsToLearn && wordsToLearn.length > 0) {
     const nextWord = wordsToLearn[0]
-    console.log(wordsToLearn.length)
     return await responseWithWord(ctx, nextWord)
   } else {
     ctx.menu.close()
