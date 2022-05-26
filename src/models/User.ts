@@ -3,6 +3,7 @@ import { Dict } from '@/models/Dict'
 import { DocumentType, Ref, getModelForClass, prop } from '@typegoose/typegoose'
 import { Todo } from '@/models/Todo'
 import { Word, WordModel } from '@/models/Word'
+import { random, round } from 'mathjs'
 
 export interface Settings {
   remindTime: Date
@@ -45,9 +46,19 @@ export class User {
             })
             .includes(i)
       )
+    console.log('начало списка')
     for (let i = 0; i < numberOfWords; i++) {
-      const word: Ref<Word> = wordsWithoutLearned[i]
+      console.log(i)
+      const arrayLength = wordsWithoutLearned.length
+      console.log('arrayLength', arrayLength)
+      const index = round(getRandomIndex(0, arrayLength - 1))
+      console.log('index', index)
+      const word: Ref<Word> = wordsWithoutLearned[index]
+      console.log('word', word)
+      wordsWithoutLearned.splice(index, 1)
+      console.log('arrayLengthNew', wordsWithoutLearned.length)
       this.needTolearn?.push(word)
+      console.log(this.needTolearn)
     }
     await this.save()
   }
@@ -71,4 +82,8 @@ function defaultTime(): Date {
   time.setHours(19)
   time.setMinutes(0)
   return time
+}
+
+function getRandomIndex(min: number, max: number) {
+  return random() * (max - min) + min
 }
