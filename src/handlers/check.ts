@@ -24,7 +24,7 @@ export default async function handleCheck(ctx: Context) {
       await ctx.reply('Слов для повторения нет :(')
     }
   } else {
-    console.log(2, user.todos?.length)
+    console.log(2, user.todoOnCheck)
     const todo = await TodoModel.findById(user.todoOnCheck)
     if (!todo) {
       throw new Error('Не найдено Todo')
