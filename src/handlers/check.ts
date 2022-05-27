@@ -7,8 +7,10 @@ export default async function handleCheck(ctx: Context) {
   if (!user) {
     throw new Error('user не найден')
   }
+  console.log(0, user.todos)
   if (!user.todoOnCheck) {
     if (user.todos && user.todos.length > 0) {
+      console.log(1, user.todos.length)
       const newTodo = user.todos.shift()
       user.todoOnCheck = newTodo
       await user.save()
@@ -18,9 +20,11 @@ export default async function handleCheck(ctx: Context) {
       }
       return await sendRemindWord(todo)
     } else {
+      console.log(1.1, user.todoOnCheck, user.todos)
       await ctx.reply('Слов для повторения нет :(')
     }
   } else {
+    console.log(2, user.todos?.length)
     const todo = await TodoModel.findById(user.todoOnCheck)
     if (!todo) {
       throw new Error('Не найдено Todo')

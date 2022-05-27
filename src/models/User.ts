@@ -46,19 +46,12 @@ export class User {
             })
             .includes(i)
       )
-    console.log('начало списка')
     for (let i = 0; i < numberOfWords; i++) {
-      console.log(i)
       const arrayLength = wordsWithoutLearned.length
-      console.log('arrayLength', arrayLength)
       const index = round(getRandomIndex(0, arrayLength - 1))
-      console.log('index', index)
       const word: Ref<Word> = wordsWithoutLearned[index]
-      console.log('word', word)
       wordsWithoutLearned.splice(index, 1)
-      console.log('arrayLengthNew', wordsWithoutLearned.length)
       this.needTolearn?.push(word)
-      console.log(this.needTolearn)
     }
     await this.save()
   }
