@@ -21,6 +21,7 @@ export async function trueRemindAnswer(ctx: Context) {
     await user.save()
     return sendRemindWord(todo)
   } else {
+    user.nextRemindForCheck = undefined
     await user.save()
     const text = 'На сегодня слова для повторения закончились ^_^'
     return await bot.api.sendMessage(user.telegramId, text)
@@ -57,6 +58,7 @@ export async function falseRemindAnswer(ctx: Context) {
     await user.save()
     return sendRemindWord(todo)
   } else {
+    user.nextRemindForCheck = undefined
     await user.save()
     const text = 'На сегодня слова для повторения закончились ^_^'
     return await bot.api.sendMessage(user.telegramId, text)
