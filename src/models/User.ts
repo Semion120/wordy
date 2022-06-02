@@ -72,9 +72,8 @@ export class User {
       remindHours = defaultTime().getHours()
       remindMinutes = defaultTime().getMinutes()
     }
-    remindTime.setHours(remindHours)
+    remindTime.setHours(remindHours + 24)
     remindTime.setMinutes(remindMinutes)
-    remindTime.setDate(remindTime.getDate() + 1)
     this.nextRemindForLearn = remindTime
     await this.save()
   }
