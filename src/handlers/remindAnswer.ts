@@ -6,6 +6,7 @@ import bot from '@/helpers/bot'
 
 export async function trueRemindAnswer(ctx: Context) {
   const user = ctx.dbuser
+  await user.setRemindForCheck()
   await TodoModel.deleteOne({ _id: user.todoOnCheck })
   user.todoOnCheck = undefined
   await ctx.editMessageText('Это правильный ответ :)')
@@ -28,6 +29,7 @@ export async function trueRemindAnswer(ctx: Context) {
 
 export async function falseRemindAnswer(ctx: Context) {
   const user = ctx.dbuser
+  await user.setRemindForCheck()
   await ctx.editMessageText(
     'Это неверный ответ :(\nЯ пришлю это слово, чтобы ты его смог повторить. В следущий раз не ошибешься :) \nВ след за ним отправлю следущее слово для проверки, ты его отличишь по кнопкам с верным вариантом ответа :)'
   )

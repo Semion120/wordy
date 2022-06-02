@@ -32,7 +32,7 @@ export class User {
   @prop({ default: undefined })
   nextRemindForLearn?: Date | undefined
   @prop({ default: undefined })
-  lastRemindForCheck?: Date | undefined
+  nextRemindForCheck?: Date | undefined
 
   public async findRandomWords(
     this: DocumentType<User>,
@@ -75,6 +75,23 @@ export class User {
     remindTime.setHours(remindHours + 24)
     remindTime.setMinutes(remindMinutes)
     this.nextRemindForLearn = remindTime
+    await this.save()
+  }
+
+  public async setRemindForCheck(this: DocumentType<User>) {
+    const remindTime = todayMSK()
+    let remindHours: number
+    let remindMinutes: number
+    if (this.settings) {
+      remindHours = this.settings?.remindTime.getHours()
+      remindMinutes = this.settings?.remindTime.getMinutes()
+    } else {
+      remindHours = defaultTime().getHours()
+      remindMinutes = defaultTime().getMinutes()
+    }
+    remindTime.setHours(remindHours + 72)
+    remindTime.setMinutes(remindMinutes)
+    this.nextRemindForCheck = remindTime
     await this.save()
   }
 }

@@ -74,6 +74,7 @@ async function checkBD() {
     }
   }
 
+  // Check usersToLearn
   const usersToLearn = await UserModel.find({
     nextRemindForLearn: { $lte: today },
   })
@@ -86,6 +87,23 @@ async function checkBD() {
         parse_mode: 'HTML',
       })
       await user.setRemindForLearn()
+      await user.save()
+    }
+  }
+
+  // Check usersToCheck
+  const usersToCheck = await UserModel.find({
+    nextRemindForCheck: { $lte: today },
+  })
+
+  if (usersToCheck) {
+    for (const user of usersToCheck) {
+      const text =
+        'Привет! Ты не учил новые слова больше 24 часов! Рекомендую команду /learn.'
+      await bot.api.sendMessage(user.telegramId, text, {
+        parse_mode: 'HTML',
+      })
+      await user.setRemindForCheck()
       await user.save()
     }
   }
