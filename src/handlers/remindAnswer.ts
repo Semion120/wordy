@@ -7,7 +7,6 @@ import bot from '@/helpers/bot'
 export async function trueRemindAnswer(ctx: Context) {
   const user = ctx.dbuser
   await TodoModel.deleteOne({ _id: user.todoOnCheck })
-  console.log(user.todoOnCheck, user.todos?.length)
   user.todoOnCheck = undefined
   await ctx.editMessageText('Это правильный ответ :)')
 

@@ -4,6 +4,7 @@ import { DocumentType, Ref, getModelForClass, prop } from '@typegoose/typegoose'
 import { Todo } from '@/models/Todo'
 import { Word, WordModel } from '@/models/Word'
 import { random, round } from 'mathjs'
+import todayMSK from '@/helpers/todayMSK'
 
 export interface Settings {
   remindTime: Date
@@ -19,7 +20,7 @@ export class User {
   @prop({ ref: Word, default: [] })
   learnedWords?: Ref<Word>[]
   @prop({
-    default: { reremindTime: defaultTime() },
+    default: { remindTime: defaultTime() },
   })
   settings?: Settings
   @prop({ ref: Word, default: [] })
@@ -28,6 +29,10 @@ export class User {
   todos?: Ref<Todo>[]
   @prop({ ref: Todo, default: undefined })
   todoOnCheck?: Ref<Todo> | undefined
+  @prop({ default: undefined })
+  nextRemindForLearn?: Date | undefined
+  @prop({ default: undefined })
+  lastRemindForCheck?: Date | undefined
 
   public async findRandomWords(
     this: DocumentType<User>,
@@ -53,6 +58,24 @@ export class User {
       wordsWithoutLearned.splice(index, 1)
       this.needTolearn?.push(word)
     }
+    await this.save()
+  }
+
+  public async setRemindForLearn(this: DocumentType<User>) {
+    const remindTime = todayMSK()
+    let remindHours: number
+    let remindMinutes: number
+    if (this.settings) {
+      remindHours = this.settings?.remindTime.getHours()
+      remindMinutes = this.settings?.remindTime.getMinutes()
+    } else {
+      remindHours = defaultTime().getHours()
+      remindMinutes = defaultTime().getMinutes()
+    }
+    remindTime.setHours(remindHours)
+    remindTime.setMinutes(remindMinutes)
+    remindTime.setDate(remindTime.getDate() + 1)
+    this.nextRemindForLearn = remindTime
     await this.save()
   }
 }

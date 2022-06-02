@@ -3,6 +3,7 @@ import Context from '@/models/Context'
 import sendOptions from '@/helpers/sendOptions'
 
 export default async function handleLearn(ctx: Context) {
+  await ctx.dbuser.setRemindForLearn()
   const options = sendOptions(ctx)
   const wordsToLearn = ctx.dbuser.needTolearn
   if (wordsToLearn && wordsToLearn[0]) {

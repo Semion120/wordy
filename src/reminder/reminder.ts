@@ -5,6 +5,7 @@ import { TodoModel } from '@/models/Todo'
 import { User, UserModel } from '@/models/User'
 import { scheduleJob } from 'node-schedule'
 import { sendRemindWord } from '@/reminder/sendRemindWord'
+import bot from '@/helpers/bot'
 import startMongo from '@/helpers/startMongo'
 import todayMSK from '@/helpers/todayMSK'
 
@@ -72,5 +73,22 @@ async function checkBD() {
       }
     }
   }
+
+  const usersToLearn = await UserModel.find({
+    remindForLearn: { nextRemindForLearn: { $lte: today } },
+  })
+
+  if (usersToLearn) {
+    for (const user of usersToLearn) {
+      const text =
+        'Привет! Ты не учил новые слова больше 24 часов! Рекомендую команду /learn.'
+      await bot.api.sendMessage(user.telegramId, text, {
+        parse_mode: 'HTML',
+      })
+      await user.setRemindForLearn()
+      await user.save()
+    }
+  }
+
   console.log('Проверка БД окончена')
 }
