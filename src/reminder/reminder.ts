@@ -75,7 +75,7 @@ async function checkBD() {
   }
 
   const usersToLearn = await UserModel.find({
-    remindForLearn: { nextRemindForLearn: { $lte: today } },
+    nextRemindForLearn: { $lte: today },
   })
 
   if (usersToLearn) {
