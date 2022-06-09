@@ -99,8 +99,8 @@ export class User {
     if (!remindMinutes) {
       remindMinutes = defaultTime().getMinutes()
     }
-    remindTime.setHours(remindHours + 48)
-    remindTime.setMinutes(remindMinutes)
+    remindTime.setHours(remindHours)
+    remindTime.setMinutes(remindMinutes + 20)
     this.nextRemindForCheck = remindTime
     await this.save()
   }
