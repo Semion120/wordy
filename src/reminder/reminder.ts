@@ -81,12 +81,21 @@ async function checkBD() {
 
   if (usersToLearn) {
     for (const user of usersToLearn) {
-      const text =
-        'Привет! Ты не учил новые слова больше 24 часов! Рекомендую команду /learn.'
+      await user.setRemindForLearn(true)
+      let text
+      if (user.lostDaysForLearn && user.lostDaysForLearn >= 3) {
+        text = `Привет горемыка😁, ты пропустил более ${
+          user.lostDaysForLearn
+        } дней. За это время ты мог выучить ${user.lostDaysForLearn * 5}-${
+          user.lostDaysForLearn * 15
+        } слов. Просто нажми /learn, чтобы не было как всегда.`
+      } else {
+        text =
+          'Привет! Ты не учил новые слова больше 24 часов! Рекомендую команду /learn.'
+      }
       await bot.api.sendMessage(user.telegramId, text, {
         parse_mode: 'HTML',
       })
-      await user.setRemindForLearn()
       await user.save()
     }
   }

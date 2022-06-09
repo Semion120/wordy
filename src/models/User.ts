@@ -31,6 +31,8 @@ export class User {
   todoOnCheck?: Ref<Todo> | undefined
   @prop({ default: undefined })
   nextRemindForLearn?: Date | undefined
+  @prop({ default: 0 })
+  lostDaysForLearn?: number
   @prop({ default: undefined })
   nextRemindForCheck?: Date | undefined
 
@@ -61,7 +63,10 @@ export class User {
     await this.save()
   }
 
-  public async setRemindForLearn(this: DocumentType<User>) {
+  public async setRemindForLearn(
+    this: DocumentType<User>,
+    lostDaysAdd = false
+  ) {
     const remindTime = todayMSK()
     let remindHours: number
     let remindMinutes: number
@@ -75,21 +80,26 @@ export class User {
     remindTime.setHours(remindHours + 24)
     remindTime.setMinutes(remindMinutes)
     this.nextRemindForLearn = remindTime
+
+    if (lostDaysAdd && this.lostDaysForLearn) {
+      this.lostDaysForLearn += 1
+    } else if (!lostDaysAdd && this.lostDaysForLearn) {
+      this.lostDaysForLearn = 0
+    }
     await this.save()
   }
 
   public async setRemindForCheck(this: DocumentType<User>) {
     const remindTime = todayMSK()
-    let remindHours: number
-    let remindMinutes: number
-    if (this.settings) {
-      remindHours = this.settings?.remindTime.getHours()
-      remindMinutes = this.settings?.remindTime.getMinutes()
-    } else {
+    let remindHours = this.settings?.remindTime.getHours()
+    if (!remindHours) {
       remindHours = defaultTime().getHours()
+    }
+    let remindMinutes = this.settings?.remindTime.getMinutes()
+    if (!remindMinutes) {
       remindMinutes = defaultTime().getMinutes()
     }
-    remindTime.setHours(remindHours + 72)
+    remindTime.setHours(remindHours + 48)
     remindTime.setMinutes(remindMinutes)
     this.nextRemindForCheck = remindTime
     await this.save()

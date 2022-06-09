@@ -29,7 +29,7 @@ async function runApp() {
   bot
     // Middlewares
     .use(sequentialize())
-    .use(ignoreOld(3 * 24 * 60 * 60))
+    .use(ignoreOld(2 * 24 * 60 * 60))
     .use(attachUser)
     .use(i18n.middleware())
     .use(configureI18n)
