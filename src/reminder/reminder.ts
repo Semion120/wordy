@@ -108,7 +108,7 @@ async function checkBD() {
   if (usersToCheck) {
     for (const user of usersToCheck) {
       const text =
-        'Привет! Ты не повторял слова уже более 3 дней! Рекомендую команду /check.'
+        'Привет! Ты не повторял слова уже более 2 дней! Рекомендую команду /check.'
       await bot.api.sendMessage(user.telegramId, text, {
         parse_mode: 'HTML',
       })
