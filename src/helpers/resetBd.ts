@@ -8,8 +8,6 @@ async function resetBd() {
   await startMongo()
   await UserModel.deleteMany({})
   await TodoModel.deleteMany({})
-  await UserModel.remove({})
-  await TodoModel.remove({})
 }
 
 resetBd()
