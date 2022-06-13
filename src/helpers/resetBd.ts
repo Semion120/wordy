@@ -1,13 +1,20 @@
 import 'module-alias/register'
 
-import { TodoModel } from '@/models/Todo'
 import { UserModel } from '@/models/User'
 import startMongo from '@/helpers/startMongo'
 
 async function resetBd() {
   await startMongo()
-  await UserModel.deleteMany({})
-  await TodoModel.deleteMany({})
+  const users = await UserModel.find()
+  for (const user of users) {
+    user.todos = []
+    user.todoOnCheck = undefined
+    user.nextRemindForLearn = undefined
+    user.nextRemindForCheck = undefined
+    user.lostDaysForLearn = 0
+  }
+  await UserModel.deleteMany()
+  await UserModel.insertMany(users)
 }
 
 resetBd()
