@@ -52,7 +52,7 @@ export async function falseRemindAnswer(ctx: Context) {
     const todoId = user.todos.shift()
     const todo = await TodoModel.findById(todoId)
     if (!todo) {
-      throw new Error('Не получается найти ToDo в trueRemindAnswer controller')
+      throw new Error('Не получается найти ToDo в falseRemindAnswer controller')
     }
     user.todoOnCheck = todoId
     await user.save()

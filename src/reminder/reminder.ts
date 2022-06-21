@@ -1,7 +1,7 @@
 import 'module-alias/register'
 
 import { DocumentType } from '@typegoose/typegoose'
-import { TodoModel } from '@/models/Todo'
+import { Step, TodoModel } from '@/models/Todo'
 import { User, UserModel } from '@/models/User'
 import { scheduleJob } from 'node-schedule'
 import { sendRemindWord } from '@/reminder/sendRemindWord'
@@ -70,6 +70,34 @@ async function checkBD() {
           user?.todos?.push(todo)
           await user.save()
         }
+      }
+    }
+  }
+
+  const minutes20Todos = await TodoModel.find({
+    step: Step.minutes20,
+    remindTime: { $lte: today },
+  })
+  const usersIds: number[] = []
+  if (minutes20Todos) {
+    for (const oneTodo of minutes20Todos) {
+      if (!usersIds.includes(oneTodo.telegramId)) {
+        usersIds.push(oneTodo.telegramId)
+      }
+    }
+  }
+  if (usersIds[0]) {
+    for (const userId of usersIds) {
+      const user = await UserModel.findOne({ telegramId: userId })
+      if (!user) {
+        throw new Error('Не удается найти юзера в отправке 20-ти минуток')
+      }
+      const userTodoOnCheck = await TodoModel.findById(user.todoOnCheck)
+      if (!userTodoOnCheck) {
+        throw new Error('Не удается найти ToDo в отправке 20-ти минуток')
+      }
+      if (userTodoOnCheck.step != Step.minutes20) {
+        await sendRemindWord(userTodoOnCheck)
       }
     }
   }
