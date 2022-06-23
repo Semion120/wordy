@@ -33,6 +33,20 @@ export const learnNewWordMenu = new Menu<Context>('learnNewWord')
     await nextWord(ctx)
   })
   .row()
+  .text('Больше переводов', async (ctx) => {
+    const user = ctx.dbuser
+    if (!user.needTolearn || !user.needTolearn[0]) {
+      throw new Error('Нет слова для изучения')
+    }
+    await responseWithWord(ctx, user.needTolearn[0], true, true)
+  })
+  .text('Больше примеров', async (ctx) => {
+    const user = ctx.dbuser
+    if (!user.needTolearn || !user.needTolearn[0]) {
+      throw new Error('Нет слова для изучения')
+    }
+    await responseWithWord(ctx, user.needTolearn[0], true, false, true)
+  })
 
 export async function nextWord(ctx: Context) {
   const wordsToLearn = ctx.dbuser.needTolearn
@@ -61,19 +75,87 @@ async function findNewWordsToLearn(ctx: Context, numberOfWords: number) {
   await ctx.dbuser.findRandomWords(numberOfWords)
 }
 
-export async function makeWordTemplate(word: Ref<Word> | undefined) {
+export async function makeWordTemplate(
+  word: Ref<Word> | undefined,
+  moreTranslats = false,
+  moreExamples = false
+) {
   const w = await WordModel.findById(word?.toString())
   if (w) {
-    let translate = 'Translate is undefind'
-    if (w.translates) {
-      translate = w.translates[0]
-    } else {
-      throw new Error(`Cannot find translates for |${w.englishWord}|`)
-    }
-    return `${w.englishWord}\n${w.transcription}\n${translate}\n\n${w.examples[0].englishExample}—${w.examples[0].russianExample}\n\n${w.examples[1].englishExample}—${w.examples[1].russianExample}`
+    const translates = getTranslates(w, moreTranslats)
+    const examples = getExamples(w, moreExamples)
+    return `${w.englishWord}\n${w.transcription}\n\n${translates}\n\n${examples}`
   } else {
     throw new Error('Cant find word with ID: ' + word?.toString())
   }
+}
+
+function getTranslates(word: Word, moreTranslats = false) {
+  let translates = ``
+  let num = 0
+  if (!word.translates || !word.translates[0]) {
+    throw new Error('Не найдены переводы у слова')
+  }
+  if (!moreTranslats) {
+    if (word.translates[0]) {
+      num += 1
+      const translate = `${num}) ${word.translates[0]}\n`
+      translates += translate
+    }
+    if (word.translates[1]) {
+      num += 1
+      const translate = `${num}) ${word.translates[1]}\n`
+      translates += translate
+    }
+    if (word.translates[2]) {
+      num += 1
+      const translate = `${num}) ${word.translates[2]}`
+      translates += translate
+    }
+  } else {
+    for (const translate of word.translates) {
+      num += 1
+      const doneTranslate =
+        num == word.translates.length
+          ? `${num}) ${translate}`
+          : `${num}) ${translate}\n`
+      translates += doneTranslate
+    }
+    if (word.translates.length <= 3) {
+      translates += '\n<b>Больше переводов в базе нет</b>'
+    }
+  }
+  return translates
+}
+function getExamples(word: Word, moreExamples = false) {
+  const examples = word.examples
+  if (!examples || !examples[0]) {
+    throw new Error('Не найдены переводы у слова')
+  }
+  let doneExample = ``
+  if (!moreExamples) {
+    doneExample = `${word.examples[0].englishExample.replace(
+      word.englishWord,
+      `<b>${word.englishWord}</b>`
+    )}—${word.examples[0].russianExample}`
+  } else {
+    let num = 0
+    for (const example of examples) {
+      num += 1
+      const ex =
+        num == 3
+          ? `${example.englishExample.replace(
+              word.englishWord,
+              `<b>${word.englishWord}</b>`
+            )}—${example.russianExample}\n\n`
+          : `${example.englishExample.replace(
+              word.englishWord,
+              `<b>${word.englishWord}</b>`
+            )}—${example.russianExample}\n\n`
+      doneExample += ex
+    }
+  }
+  return doneExample
 }
 
 async function updateWordsDb(ctx: Context) {
@@ -92,17 +174,25 @@ async function updateWordsDb(ctx: Context) {
 export async function responseWithWord(
   ctx: Context,
   nextWord: Ref<Word>,
-  edit = true
+  edit = true,
+  moreTranslats = false,
+  moreExamples = false
 ) {
   if (edit) {
-    return await ctx.editMessageText(await makeWordTemplate(nextWord), {
-      parse_mode: 'HTML',
-      reply_markup: learnNewWordMenu,
-    })
+    return await ctx.editMessageText(
+      await makeWordTemplate(nextWord, moreTranslats, moreExamples),
+      {
+        parse_mode: 'HTML',
+        reply_markup: learnNewWordMenu,
+      }
+    )
   } else {
-    return await ctx.reply(await makeWordTemplate(nextWord), {
-      parse_mode: 'HTML',
-      reply_markup: learnNewWordMenu,
-    })
+    return await ctx.reply(
+      await makeWordTemplate(nextWord, moreTranslats, moreExamples),
+      {
+        parse_mode: 'HTML',
+        reply_markup: learnNewWordMenu,
+      }
+    )
   }
 }

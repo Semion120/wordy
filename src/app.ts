@@ -6,9 +6,11 @@ import { falseRemindAnswer, trueRemindAnswer } from '@/handlers/remindAnswer'
 import { ignoreOld, sequentialize } from 'grammy-middlewares'
 import { learnNewWordMenu, learnStartMenu } from '@/menus/learn'
 import { run } from '@grammyjs/runner'
+import adminMenu from '@/menus/adminMenu'
 import attachUser from '@/middlewares/attachUser'
 import bot from '@/helpers/bot'
 import configureI18n from '@/middlewares/configureI18n'
+import handleAdminMessage from '@/handlers/adminMessage'
 import handleCheck from '@/handlers/check'
 import handleLanguage from '@/handlers/language'
 import handleLearn from '@/handlers/learn'
@@ -38,6 +40,7 @@ async function runApp() {
     .use(settingsMenu)
     .use(learnNewWordMenu)
     .use(learnStartMenu)
+    .use(adminMenu)
   // Commands
   bot.command(['help', 'start'], sendHelp)
   bot.command('settings', handleSettings)
@@ -50,6 +53,7 @@ async function runApp() {
   bot.callbackQuery('false-answer-remind', falseRemindAnswer)
   // Words
   bot.hears(/[0-9]{2}:[0-9]{2}/, handleRemindTime)
+  bot.hears(/.*/, handleAdminMessage)
   // Errors
   bot.catch(console.error)
   // Start bot
