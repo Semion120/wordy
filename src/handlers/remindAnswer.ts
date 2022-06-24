@@ -17,7 +17,7 @@ export async function trueRemindAnswer(ctx: Context) {
     if (!todo) {
       throw new Error('Не получается найти ToDo в trueRemindAnswer controller')
     }
-    user.todoOnCheck = todoId
+    user.todoOnCheck = todo
     await user.save()
     return sendRemindWord(todo)
   } else {
@@ -54,7 +54,7 @@ export async function falseRemindAnswer(ctx: Context) {
     if (!todo) {
       throw new Error('Не получается найти ToDo в falseRemindAnswer controller')
     }
-    user.todoOnCheck = todoId
+    user.todoOnCheck = todo
     await user.save()
     return sendRemindWord(todo)
   } else {
