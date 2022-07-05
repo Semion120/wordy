@@ -24,9 +24,7 @@ export default async function handleCheck(ctx: Context) {
   } else {
     const todo = await TodoModel.findById(user.todoOnCheck)
     if (!todo) {
-      throw new Error(
-        'Не найдено Todo. Этой ошибки не должно было быть, пиши сюда: @Semion_b'
-      )
+      throw new Error('Не найдено Todo.')
     }
     return await sendRemindWord(todo)
   }

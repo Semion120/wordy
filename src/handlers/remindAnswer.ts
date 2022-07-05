@@ -15,7 +15,13 @@ export async function trueRemindAnswer(ctx: Context) {
     const todoId = user.todos.shift()
     const todo = await TodoModel.findById(todoId)
     if (!todo) {
-      throw new Error('Не получается найти ToDo в trueRemindAnswer controller')
+      user.todos = []
+      await user.save()
+      const text = 'Пока что слова для повторения закончились ^_^'
+      await bot.api.sendMessage(user.telegramId, text)
+      throw new Error(
+        `Не получается найти ToDo (${todoId}) в trueRemindAnswer controller. Количество Todos: ${user.todos.length}`
+      )
     }
     user.todoOnCheck = todo
     await user.save()
@@ -52,6 +58,10 @@ export async function falseRemindAnswer(ctx: Context) {
     const todoId = user.todos.shift()
     const todo = await TodoModel.findById(todoId)
     if (!todo) {
+      user.todos = []
+      await user.save()
+      const text = 'Пока что слова для повторения закончились ^_^'
+      await bot.api.sendMessage(user.telegramId, text)
       throw new Error('Не получается найти ToDo в falseRemindAnswer controller')
     }
     user.todoOnCheck = todo

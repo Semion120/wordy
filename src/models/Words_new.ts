@@ -2,6 +2,7 @@ import * as findorcreate from 'mongoose-findorcreate'
 import {
   DocumentType,
   getModelForClass,
+  modelOptions,
   plugin,
   prop,
 } from '@typegoose/typegoose'
@@ -22,7 +23,8 @@ export interface testQuestion {
 }
 
 @plugin(findorcreate)
-export class Word extends FindOrCreate {
+@modelOptions({ schemaOptions: { collection: 'words_new' } })
+export class Words_new extends FindOrCreate {
   @prop({ required: true, index: true, unique: true })
   englishWord!: string
 
@@ -38,7 +40,9 @@ export class Word extends FindOrCreate {
   @prop()
   testQuestion?: testQuestion
 
-  public async makeTestQuestion(this: DocumentType<Word>) {
+  public async makeTestQuestion(
+    this: DocumentType<Words_new>
+  ): Promise<testQuestion> {
     const question = 'Как перевести слово: ' + this.englishWord + '?'
     let example = ''
     if (this.examples[0]) {
@@ -60,21 +64,20 @@ export class Word extends FindOrCreate {
     if (translate) {
       rightAnswer = translate[0]
     }
-    this.testQuestion = {
+    return {
       question,
       example,
       incorrectAnswer1,
       incorrectAnswer2,
       rightAnswer,
     }
-    await this.save()
   }
 }
 
-export const WordModel = getModelForClass(Word)
+export const Words_newModel = getModelForClass(Words_new)
 
-export async function findRandomWord(): Promise<DocumentType<Word>> {
-  const words = await WordModel.find({})
+export async function findRandomWord(): Promise<DocumentType<Words_new>> {
+  const words = await Words_newModel.find({})
   const randomIndex = floor(random() * 2800)
   return words[randomIndex]
 }
@@ -85,7 +88,7 @@ export async function findOrCreateWord(
   translates: string[] | string | undefined,
   examples: { englishExample: string; russianExample: string }[]
 ) {
-  return await WordModel.findOrCreate({
+  return await Words_newModel.findOrCreate({
     englishWord,
     transcription,
     translates,

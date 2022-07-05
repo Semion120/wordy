@@ -13,7 +13,8 @@
     "pretty": "prettier --check src",
     "lint": "yarn pretty && eslint --max-warnings 0 --ext ts,tsx,json src",
     "reminder": "yarn build-ts && node dist/reminder/reminder.js",
-    "resetBd": "yarn build-ts && node dist/helpers/resetBd.js"
+    "resetBd": "yarn build-ts && node dist/helpers/resetBd.js",
+    "updateWords": "yarn build-ts && node dist/helpers/updateWords.js"
   },
   "dependencies": {
     "@grammyjs/i18n": "^0.5.0",
