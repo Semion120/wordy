@@ -2,7 +2,7 @@ import 'module-alias/register'
 
 import { TodoModel } from '@/models/Todo'
 import { WordModel } from '@/models/Word'
-import { Words_newModel } from '@/models/Words_new'
+import { Words_newModel } from '@/models/WordsUpdate'
 import startMongo from '@/helpers/startMongo'
 
 updateWords().catch((err) => console.log(err))
@@ -43,9 +43,7 @@ async function updateWords() {
     if (!word || !word.testQuestion) {
       continue
     }
-    console.log(todo.testQuestion)
     todo.testQuestion = word?.testQuestion
-    console.log(todo.testQuestion)
     await todo.save()
   }
   console.log('Обновление БД слов выполнено')
