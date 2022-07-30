@@ -1,6 +1,5 @@
-import { TodoModel } from '@/models/Todo'
-import { sendRemindWord } from '@/reminder/sendRemindWord'
 import Context from '@/models/Context'
+import sendToDoOnCheck from '@/helpers/sendToDoOnCheck'
 
 export default async function handleCheck(ctx: Context) {
   await ctx.dbuser.setRemindForCheck()
@@ -13,19 +12,11 @@ export default async function handleCheck(ctx: Context) {
       const newTodo = user.todos.shift()
       user.todoOnCheck = newTodo
       await user.save()
-      const todo = await TodoModel.findById(user.todoOnCheck)
-      if (!todo) {
-        throw new Error('Не найдено Todo')
-      }
-      return await sendRemindWord(todo)
+      return await sendToDoOnCheck(user.todoOnCheck, user, ctx)
     } else {
       await ctx.reply('Слов для повторения нет :(')
     }
   } else {
-    const todo = await TodoModel.findById(user.todoOnCheck)
-    if (!todo) {
-      throw new Error('Не найдено Todo.')
-    }
-    return await sendRemindWord(todo)
+    return await sendToDoOnCheck(user.todoOnCheck, user, ctx)
   }
 }
